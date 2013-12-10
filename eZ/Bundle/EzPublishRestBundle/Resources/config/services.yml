@@ -29,7 +29,7 @@ parameters:
     ezpublish_rest.response_listener.class: eZ\Bundle\EzPublishRestBundle\EventListener\ResponseListener
 
     ezpublish_rest.listener.cors.class: eZ\Bundle\EzPublishRestBundle\EventListener\CorsListener
-    ezpublish_rest.listener.cors.manager.class: eZ\Bundle\EzPublishRestBundle\Cors\Manager
+    ezpublish_rest.listener.cors.manager.dev.class: eZ\Bundle\EzPublishRestBundle\Cors\Manager\Dev
 
     ezpublish_rest.field_type_processor_registry.class: eZ\Publish\Core\REST\Common\FieldTypeProcessorRegistry
     ezpublish_rest.field_type_processor.ezimage.class: eZ\Publish\Core\REST\Common\FieldTypeProcessor\ImageProcessor
@@ -235,8 +235,8 @@ services:
         tags:
             - { name: kernel.event_subscriber }
 
-    ezpublish_rest.cors.manager:
-        class: %ezpublish_rest.listener.cors.manager.class%
+    ezpublish_rest.cors.manager.dev:
+        class: %ezpublish_rest.listener.cors.manager.dev.class%
 
     ezpublish_rest.field_type_processor_registry:
         class: %ezpublish_rest.field_type_processor_registry.class%

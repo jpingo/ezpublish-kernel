@@ -8,10 +8,12 @@
  */
 namespace eZ\Bundle\EzPublishRestBundle\Cors;
 
-class Manager
+interface Manager
 {
-    public function hostIsAllowed( $host )
-    {
-        return true;
-    }
+    /**
+     * Checks if $host is allowed for CORS requests
+     * @param string $host
+     * @return bool
+     */
+    public function hostIsAllowed( $host );
 }
