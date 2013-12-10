@@ -143,7 +143,6 @@ abstract class EventListenerTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param bool $csrfEnabled
      * @return CsrfListener
      */
     abstract protected function getEventListener();
