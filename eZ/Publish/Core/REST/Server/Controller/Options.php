@@ -11,6 +11,7 @@ namespace eZ\Publish\Core\REST\Server\Controller;
 
 use eZ\Publish\Core\REST\Server\Values;
 use eZ\Publish\Core\REST\Server\Controller as RestController;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Root controller
@@ -22,8 +23,16 @@ class Options extends RestController
      * @param $allowedMethods string comma separated list of supported methods. Depends on the matched OPTIONS route.
      * @return Values\Options
      */
-    public function getRouteOptions( $allowedMethods )
+    public function getRouteOptions( Request $_request, $allowedMethods )
     {
-        return new Values\Options( explode( ',', $allowedMethods ) );
+        $allowedMethods = explode( ',', $allowedMethods );
+        $options = new Values\Options( $allowedMethods );
+
+        // Coupling: should we instead trigger some kind of listener that adds whatever needs to be added to if required ?
+        // Or is it fine to consider that this tiny responsibility is the controller's ?
+        if ( $_request->attributes->has( 'corsAllowOrigin' ) )
+        {
+            $options->corsRequestMethods = $allowedMethods;
+        }
     }
 }

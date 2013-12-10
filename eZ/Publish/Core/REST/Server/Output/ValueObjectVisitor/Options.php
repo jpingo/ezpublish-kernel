@@ -25,5 +25,10 @@ class Options extends ValueObjectVisitor
         $visitor->setHeader( 'Allow', implode( ',', $data->allowedMethods ) );
         $visitor->setHeader( 'Content-Length', 0 );
         $visitor->setStatus( 200 );
+
+        if ( $data->corsRequestMethod !== null )
+        {
+            $visitor->setHeader( 'Access-Control-Request-Method', implode( ',', $data->corsRequestMethod ) );
+        }
     }
 }

@@ -23,8 +23,14 @@ class Options extends ValueObject
      */
     public $allowedMethods;
 
+    /**
+     * The allowed CORS request methods
+     * @var array
+     */
+    public $corsRequestMethod;
+
     public function __construct( $allowedMethods )
     {
-        $this->allowedMethods = $allowedMethods;
+        $this->corsRequestMethod = $allowedMethods;
     }
 }
