@@ -12,6 +12,7 @@ use eZ\Bundle\EzPublishRestBundle\Cors\Manager as CorsManager;
 use eZ\Bundle\EzPublishRestBundle\EventListener\CorsListener;
 use PHPUnit_Framework_MockObject_MockObject;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
@@ -20,58 +21,37 @@ use Symfony\Component\HttpKernel\KernelEvents;
 /**
  * @covers eZ\Bundle\EzPublishRestBundle\EventListener\CorsListener
  */
-abstract class CorsListenerTest extends EventListenerTest
+class CorsResponseListenerTest extends CorsListenerTest
 {
-    /** @var Request */
-    protected $request;
-
     /** @var Response */
     protected $response;
 
     public function setUp()
     {
-        $this->request = new Request;
-        $this->request->attributes->set( 'is_rest_request', true );
+        parent::setUp();
+        $this->response = new Response();
     }
 
-    /**
-     * @return CorsListener
-     */
-    protected function getEventListener()
+    public function testNotCorsRequest()
     {
-        return new CorsListener(
-            $this->getCorsManagerMock()
+        $this->getEventListener()->onKernelResponse( $this->getResponseEvent() );
+
+        self::assertFalse(
+            $this->response->headers->has( 'Access-Control-Allow-Origin' )
         );
     }
 
-    /**
-     * @return CorsManager|PHPUnit_Framework_MockObject_MockObject
-     */
-    protected function getCorsManagerMock()
+    public function testCorsRequest()
     {
-        if ( !isset( $this->corsManagerMock ) )
-        {
-            $this->corsManagerMock = $this->getMock( 'eZ\Bundle\EzPublishRestBundle\Cors\Manager' );
-        }
-        return $this->corsManagerMock;
-    }
+        $origin = 'http://client.example.com';
+        $this->request->attributes->set( 'corsAllowOrigin', $origin );
 
-    /**
-     * Returns an array with the events the listener should be subscribed to
-     */
-    public function provideExpectedSubscribedEventTypes()
-    {
-        return array(
-            array( array( KernelEvents::REQUEST, KernelEvents::RESPONSE ) )
+        $this->getEventListener()->onKernelResponse( $this->getResponseEvent() );
+
+        self::assertTrue(
+            $this->response->headers->has( 'Access-Control-Allow-Origin' )
         );
-    }
-
-    /**
-     * @return GetResponseEvent|PHPUnit_Framework_MockObject_MockObject
-     */
-    protected function getRequestEvent()
-    {
-        return $this->getEventMock( 'Symfony\Component\HttpKernel\Event\GetResponseEvent' );
+        self::assertEquals( $origin, $this->response->headers->get( 'Access-Control-Allow-Origin' ) );
     }
 
     /**
@@ -79,11 +59,13 @@ abstract class CorsListenerTest extends EventListenerTest
      */
     protected function getResponseEvent()
     {
-        $event = $this->getEventMock( 'Symfony\Component\HttpKernel\Event\GetResponseEvent' );
+        $event = $this->getEventMock( 'Symfony\Component\HttpKernel\Event\FilterResponseEvent' );
 
         $event->expects( $this->any() )
             ->method( 'getResponse' )
             ->will( $this->returnValue( $this->response ) );
+
+        return $event;
     }
 
     protected function getRequestMock()
