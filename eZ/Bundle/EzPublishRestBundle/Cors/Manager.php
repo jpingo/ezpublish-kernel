@@ -16,4 +16,11 @@ interface Manager
      * @return bool
      */
     public function hostIsAllowed( $host );
+
+    /**
+     * Checks if $header is a valid header
+     * @param string $header
+     * @return bool
+     */
+    public function headerIsAllowed( $header );
 }

@@ -27,7 +27,19 @@ class Options extends ValueObject
      * The allowed CORS request methods
      * @var array
      */
-    public $corsRequestMethod;
+    public $corsRequestMethod = array();
+
+    /**
+     * The allowed CORS request headers
+     * @var array
+     */
+    public $corsAllowHeaders = array();
+
+    /**
+     * Allow CORS credentials
+     * @var bool
+     */
+    public $corsAllowCredentials = false;
 
     public function __construct( $allowedMethods )
     {

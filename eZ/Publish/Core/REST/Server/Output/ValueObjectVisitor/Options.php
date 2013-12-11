@@ -20,6 +20,11 @@ use eZ\Publish\Core\REST\Common\Output\Visitor;
  */
 class Options extends ValueObjectVisitor
 {
+    /**
+     * @param Visitor $visit
+     * @param Generator $generator
+     * @param \eZ\Publish\Core\REST\Server\Values\Options $data
+     */
     public function visit( Visitor $visitor, Generator $generator, $data )
     {
         $visitor->setHeader( 'Allow', implode( ',', $data->allowedMethods ) );
@@ -29,6 +34,16 @@ class Options extends ValueObjectVisitor
         if ( $data->corsRequestMethod !== null )
         {
             $visitor->setHeader( 'Access-Control-Request-Method', implode( ',', $data->corsRequestMethod ) );
+        }
+
+        if ( $data->corsAllowHeaders !== null )
+        {
+            $visitor->setHeader( 'Access-Control-Request-Method', implode( ',', $data->corsAllowHeaders ) );
+        }
+
+        if ( $data->corsAllowHeaders === true )
+        {
+            $visitor->setHeader( 'Access-Control-Allow-Credentials', true );
         }
     }
 }
