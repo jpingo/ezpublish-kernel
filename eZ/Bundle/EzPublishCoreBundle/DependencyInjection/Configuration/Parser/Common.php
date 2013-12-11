@@ -88,6 +88,18 @@ class Common extends AbstractParser
                         ->prototype( 'scalar' )->end()
                     ->end()
                 ->end()
+            ->end()
+            ->arrayNode( 'user' )
+                ->children()
+                    ->scalarNode( 'layout' )
+                        ->info( 'Layout template to use for user related actions. This is most likely the base pagelayout template of your site.' )
+                        ->example( array( 'layout' => 'eZDemoBundle::pagelayout.html.twig' ) )
+                    ->end()
+                    ->scalarNode( 'login_template' )
+                        ->info( 'Template to use for login form. Defaults to EzPublishCoreBundle:security:login.html.twig' )
+                        ->example( array( 'login_template' => 'AcmeTestBundle:User:login.html.twig' ) )
+                    ->end()
+                ->end()
             ->end();
     }
 
@@ -145,6 +157,10 @@ class Common extends AbstractParser
                 $container->setParameter( "ezsettings.$sa.session_name", $settings['session_name'] );
             if ( isset( $settings['http_cache']['purge_servers'] ) )
                 $container->setParameter( "ezsettings.$sa.http_cache.purge_servers", $settings['http_cache']['purge_servers'] );
+            if ( isset( $settings['user']['layout'] ) )
+                $container->setParameter( "ezsettings.$sa.security.base_layout", $settings['user']['layout'] );
+            if ( isset( $settings['user']['login_template'] ) )
+                $container->setParameter( "ezsettings.$sa.security.login_template", $settings['user']['login_template'] );
         }
     }
 }
