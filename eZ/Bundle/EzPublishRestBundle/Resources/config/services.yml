@@ -227,13 +227,18 @@ services:
     ezpublish_rest.controller.options:
         class: %ezpublish_rest.controller.options.class%
         parent: ezpublish_rest.controller.base
+        arguments:
+            - @ezpublish_rest.cors.manager
 
     ezpublish_rest.listener.cors:
         class: %ezpublish_rest.listener.cors.class%
         arguments:
-            - @ezpublish_rest.cors.manager
+            - @ezpublish_rest.cors.manager.dev
         tags:
             - { name: kernel.event_subscriber }
+
+    ezpublish_rest.cors.manager:
+        alias: ezpublish_rest.cors.manager.dev
 
     ezpublish_rest.cors.manager.dev:
         class: %ezpublish_rest.listener.cors.manager.dev.class%

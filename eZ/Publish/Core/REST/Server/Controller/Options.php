@@ -34,30 +34,10 @@ class Options extends RestController
      * @param $allowedMethods string comma separated list of supported methods. Depends on the matched OPTIONS route.
      * @return Values\Options
      */
-    public function getRouteOptions( Request $_request, $allowedMethods )
+    public function getRouteOptions( $allowedMethods )
     {
-        // @todo This is insufficient, such lists can be separated with multiple commas and whitespaces
-        $allowedMethods = explode( ',', $allowedMethods );
-
-        $options = new Values\Options( $allowedMethods );
-
-        if ( $_request->attributes->has( 'corsAllowOrigin' ) )
-        {
-            $options->corsAllowCredentials = true;
-
-            $options->corsRequestMethods = $allowedMethods;
-            foreach ( $_request->headers->get( 'Access-Control-Allow-Headers' ) as $allowHeader )
-            {
-                if ( $this->corsManager->headerIsAllowed( $allowHeader ) )
-                {
-                    $options->corsAllowHeaders[] = $allowHeader;
-                }
-                else
-                {
-                    $options->corsAllowHeaders = array();
-                    break;
-                }
-            }
-        }
+        return new Values\Options(
+            explode( ',', $allowedMethods )
+        );
     }
 }

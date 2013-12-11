@@ -61,6 +61,8 @@ class CorsListener implements EventSubscriberInterface
         {
             $request->attributes->set( 'corsAllowOrigin', $request->headers->get( 'Origin' ) );
         }
+
+        // Check headers, and unset the attribute if there are invalid ones
     }
 
     /**
@@ -68,17 +70,34 @@ class CorsListener implements EventSubscriberInterface
      */
     public function onKernelResponse( FilterResponseEvent $event )
     {
-        if ( !$event->getRequest()->attributes->get( 'is_rest_request' ) )
+        $request = $event->getRequest();
+
+        if ( !$request->attributes->get( 'is_rest_request' ) )
         {
             return;
         }
 
-        if ( $event->getRequest()->attributes->has( 'corsAllowOrigin' ) )
+        if ( !$request->attributes->has( 'corsAllowOrigin' ) )
         {
-            $event->getResponse()->headers->set(
-                'Access-Control-Allow-Origin',
-                $event->getRequest()->attributes->get( 'corsAllowOrigin' )
-            );
+            return;
         }
+
+        $response = $event->getResponse();
+        $response->headers->set( 'Access-Control-Allow-Origin', $request->attributes->get( 'corsAllowOrigin' ) );
+
+        if ( $request->headers->has( 'Access-Control-Request-Credentials' ) && $request->headers->get( 'Access-Control-Request-Credentials' ) === 'true' )
+        {
+            $response->headers->set( 'Access-Control-Allow-Credentials', 'true' );
+        }
+
+        if ( $request->getMethod() === 'OPTIONS' && $response->headers->has( 'Allow' ) )
+        {
+            $response->headers->set( 'Access-Control-Allow-Methods', $response->headers->get( 'Allow' ) );
+
+            // @todo Configuration
+            $response->headers->set( 'Access-Control-Max-Age', 1728000 );
+        }
+        // @todo Test & from configuration, if applicable
+        $response->headers->set( 'Access-Control-Allow-Headers', $request->headers->get( 'Access-Control-Request-Headers' ) );
     }
 }
