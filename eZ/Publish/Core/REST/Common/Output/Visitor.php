@@ -9,10 +9,10 @@
 
 namespace eZ\Publish\Core\REST\Common\Output;
 
-use eZ\Publish\Core\REST\Common\Message;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Visitor for view models
+ * Visits a value object into an HTTP Response
  */
 class Visitor
 {
@@ -184,12 +184,12 @@ class Visitor
             $statusCode = (int)$statusCode[0];
         }
 
-        $result = new Message(
-            $filteredHeaders,
+        $result = new Response(
             ( $this->generator->isEmpty()
                 ? null
                 : $this->generator->endDocument( $data ) ),
-            $statusCode
+            $statusCode,
+            $filteredHeaders
         );
 
         $this->headers = array();

@@ -57,7 +57,7 @@ class ResponseListener implements EventSubscriberInterface
             return;
 
         $event->setResponse(
-            $this->visitResult(
+            $this->viewDispatcher->dispatch(
                 $event->getRequest(),
                 $event->getControllerResult()
             )
@@ -78,26 +78,11 @@ class ResponseListener implements EventSubscriberInterface
             return;
 
         $event->setResponse(
-            $this->visitResult(
+            $this->viewDispatcher->dispatch(
                 $event->getRequest(),
                 $event->getException()
             )
         );
         $event->stopPropagation();
-    }
-
-    /**
-     * @param Request $request
-     * @param mixed $result
-     *
-     * @return \Symfony\Component\HttpFoundation\Response
-     */
-    protected function visitResult( Request $request, $result )
-    {
-        $message = $this->viewDispatcher->dispatch( $request, $result );
-
-        // @todo It would be even better if visitors would return a Symfony message directly
-        // Use a message visitor, that is injected the dispatcher
-        return new Response( $message->body, $message->statusCode, $message->headers );
     }
 }
